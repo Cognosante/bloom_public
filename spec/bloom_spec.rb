@@ -1,6 +1,10 @@
 require 'spec_helper'
 
 describe BloomPublic do
+  before do
+    BloomPublic.configure { |c| c.secret = nil }
+  end
+
   it 'has a version number' do
     expect(BloomPublic::VERSION).not_to be nil
   end
@@ -20,13 +24,7 @@ describe BloomPublic do
     expect(BloomPublic.configuration.secret).to eq('abc-123')
   end
 
-  context 'with a secret' do
-    before do
-      BloomPublic.configure do |config|
-        config.secret = ''
-      end
-    end
-
+  context 'without a secret' do
     it 'should give me a list of sources' do
       expect(BloomPublic.sources).to be_an_instance_of(BloomPublic::Response)
     end

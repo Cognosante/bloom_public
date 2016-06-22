@@ -25,13 +25,13 @@ module BloomPublic
 
   def self.sources
     template = Addressable::Template.new("#{base_url}/sources{?query*}")
-    uri = template.expand(query: { secret: configuration.secret })
+    uri = template.expand(query: secret_param)
     Response.new(get_json(uri))
   end
 
   def self.get_by_id(source:, id:)
     template = Addressable::Template.new("#{base_url}/sources/{source}/{id}{?query*}")
-    uri = template.expand(source: source, id: id, query: { secret: configuration.secret })
+    uri = template.expand(source: source, id: id, query: secret_param)
     Response.new(get_json(uri))
   end
 
@@ -39,7 +39,7 @@ module BloomPublic
     template = Addressable::Template.new("#{base_url}/search/{source}{?query*}")
     params = {
       source: source,
-      query: { secret: configuration.secret, limit: limit, offset: offset }
+      query: secret_param.merge(limit: limit, offset: offset)
     }
     filters.each_with_index do |filter, idx|
       params[:query].merge!(filter.as_params(idx + 1))
@@ -61,10 +61,15 @@ module BloomPublic
   end
 
   def self.get_json(uri)
+    puts "-------------->#{uri}<-------------"
     MultiJson.load(RestClient.get(uri.to_s).body)
   end
 
-  def self.base_params
-    { secret: configuration.secret }
+  def self.secret_param
+    if configuration.secret && !configuration.secret.empty?
+      { secret: configuration.secret }
+    else
+      {}
+    end
   end
 end
