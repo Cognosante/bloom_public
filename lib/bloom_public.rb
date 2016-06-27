@@ -61,7 +61,6 @@ module BloomPublic
   end
 
   def self.get_json(uri)
-    puts "-------------->#{uri}<-------------"
     MultiJson.load(RestClient.get(uri.to_s).body)
   end
 
